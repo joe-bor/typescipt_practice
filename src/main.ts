@@ -1,82 +1,48 @@
-// Type Aliases
-// represent typescript types using a diff name
-type stringOrNumber = string | number
+/**
+ * Type Assertion || Type Casting
+ * 
+ *  are interchangeable?
+ */
 
-type stringOrNumberArray = (string | number)[]
+// aliases
+type One = string
+type Two = string | number
+type Three = 'hello'
 
-type Guitarist =  {
-    name?: string,
-    active: boolean,
-    album: stringOrNumberArray
+// convert to more or less specific
+let a: One = 'hello'
+let b = a as Two // less specific
+let c = a as Three // more specific
+
+console.log(a,b ,c)
+
+// angle brackets to do the same thing as above
+let d = <One>'world'
+let e = <string | number>'world'
+
+/**
+ * 
+ * When do we use this ??
+ * 
+ */
+
+const addOrConcat =  (a: number, b: number, c: 'add' | 'concat' ): number | string => {
+    if (c === 'add') return a + b
+    return '' + a +  b 
 }
 
-type UserId = stringOrNumber
+let myVal: string = addOrConcat(2,2,'concat') as string
 
-// Literal types
-let myName: 'Joe'
-let userName: "Joe" | 'Ethan' | 'Mimi'
-userName =  'Ethan'
+// BE CAREFUL w/ assertions... this example is wrong !
+// function returns a string and not a number
+// but we were able to override TS 
+let nextVal: number = addOrConcat(2,2,'concat') as number
 
+// Assertions - The DOM
+const img = document.querySelector('img')! // non-null assertion
+const myImg = document.getElementById('#img') as HTMLImageElement
+const nextImg = <HTMLImageElement>document.getElementById('#img') 
 
-// functions
-// types of return goes after params
-const add = (a: number, b: number): number => {
-    return a + b
-}
-
-const logMessage = (message: any): void => {
-    console.log(message)
-}
-
-function subtract (c:number, d: number): number {
-    return c - d
-}
-
-// type mathFunction = (a: number, b: number) => number
-interface mathFunction {
-    (a: number, b: number): number
-} 
-
-const multiply: mathFunction = function (c, d) {
-    return c * d
-}
-
-// optional parameters
-// optional params must be the last in the list
-const addAll = (a: number, b: number, c?: number): number => {
-    // type guard ->  to narrow down
-    if (typeof c !== 'undefined') return a + b + c
-    return a + b
-}
-
-const sumAll = (a: number, b: number, c: number = 2): number => {
-    // type guard ->  to narrow down
-    return a + b + c
-} 
-
-// Rest Parameters
-const total = (a: number, ...nums: number[]): number => {
-    return a + nums.reduce( (prev, curr) => prev + curr)
-}
-console.log(total(10,2,3,4))
-
-// never type
-// for functions that throws errors
-// for functions that has an infinite loop
-const createError = (errMsg: string) => {
-    throw new Error(errMsg)
-}
-
-// custom type guard
-const isNumber = (value: any): boolean => {
-    return typeof value === 'number' ?
-    true : false
-}
-
-// use of the never type
-const numberOrString = (value: number | string): string => {
-    if (typeof value === 'string') return 'string'
-    if (isNumber(value)) return 'number'
-    // return createError('This should never happen!')
-    throw new Error()
-}
+//
+img.src
+myImg.src

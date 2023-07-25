@@ -1,56 +1,36 @@
 "use strict";
-// Literal types
-let myName;
-let userName;
-userName = 'Ethan';
-// functions
-// types of return goes after params
-const add = (a, b) => {
-    return a + b;
+/**
+ * Type Assertion || Type Casting
+ *
+ *  are interchangeable?
+ */
+// convert to more or less specific
+let a = 'hello';
+let b = a; // less specific
+let c = a; // more specific
+console.log(a, b, c);
+// angle brackets to do the same thing as above
+let d = 'world';
+let e = 'world';
+/**
+ *
+ * When do we use this ??
+ *
+ */
+const addOrConcat = (a, b, c) => {
+    if (c === 'add')
+        return a + b;
+    return '' + a + b;
 };
-const logMessage = (message) => {
-    console.log(message);
-};
-function subtract(c, d) {
-    return c - d;
-}
-const multiply = function (c, d) {
-    return c * d;
-};
-// optional parameters
-// optional params must be the last in the list
-const addAll = (a, b, c) => {
-    // type guard ->  to narrow down
-    if (typeof c !== 'undefined')
-        return a + b + c;
-    return a + b;
-};
-const sumAll = (a, b, c = 2) => {
-    // type guard ->  to narrow down
-    return a + b + c;
-};
-// Rest Parameters
-const total = (a, ...nums) => {
-    return a + nums.reduce((prev, curr) => prev + curr);
-};
-console.log(total(10, 2, 3, 4));
-// never type
-// for functions that throws errors
-// for functions that has an infinite loop
-const createError = (errMsg) => {
-    throw new Error(errMsg);
-};
-// custom type guard
-const isNumber = (value) => {
-    return typeof value === 'number' ?
-        true : false;
-};
-// use of the never type
-const numberOrString = (value) => {
-    if (typeof value === 'string')
-        return 'string';
-    if (isNumber(value))
-        return 'number';
-    // return createError('This should never happen!')
-    throw new Error();
-};
+let myVal = addOrConcat(2, 2, 'concat');
+// BE CAREFUL w/ assertions... this example is wrong !
+// function returns a string and not a number
+// but we were able to override TS 
+let nextVal = addOrConcat(2, 2, 'concat');
+// Assertions - The DOM
+const img = document.querySelector('img'); // non-null assertion
+const myImg = document.getElementById('#img');
+const nextImg = document.getElementById('#img');
+//
+img.src;
+myImg.src;
