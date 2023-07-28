@@ -1,140 +1,118 @@
-class Coder {
-    secondLang!: string // ! - assertion ( I know what im doing command )
+// Index Signatures
+//  * for dynamic access of object props
+//  * or if you don't know the names of the keys  
 
-    constructor(
-        public readonly name: string,
-        public music: string,
-        private age: number,
-        protected lang: string = 'Typescript'
-        ) {
-        this.name = name
-        this.music =  music
-        this.age = age
-        this.lang = lang
-    }
+// interface TransactionObj {
+//     Pizza: number,
+//     Books: number,
+//     Job: number
+// }
 
-    public getAge() {
-        return `Hello I'm ${this.age}`
-    }
-}
+// declares all keys are strings and values will be numbers
+// interface TransactionObj {
+//     readonly [index: string]: number
+// }
 
-// visibility / data / modifiers || members
-    // readonly - cannot be changed
-    // private - can only be accessed inside Class
-    // protected - can be accessed by derived (extended) class
-
-    const Dave = new Coder('Dave', 'Rock', 42)
-    console.log(Dave.getAge())
-    // console.log(Dave.age) //
-    // console.log(Dave.lang)
-
-
-    /**~~~~~~~~~~~~~~~~~~```` */
-
-    class WebDev extends Coder {
-        constructor(
-            public computer: string,
-            name: string,
-            music: string,
-            age: number
-        ) {
-            super(name, music, age)
-            this.computer = computer
-        }
-
-        public getLang() {
-            return `I write ${this.lang}`
-        }
-    }
-
-    const Joe = new WebDev('Mac', 'Joe', 'Pop', 29)
-
-    console.log(Joe)
-    console.log(Joe.getLang())
-    
-    
-    /* 
-    ! visibility modifiers are also passed down thru extend 
-    
-    console.log(Joe.age)
-    console.log(Joe.lang)
-
-     - these have typescript errors because age is private to Coder Class, and lang is protected also defined in Coder Class
-
-     - even though WebDev is an extension of Coder, our instance, Joe is the one trying to access them and not the class itself
-
-    */
-
-
-     interface Musician {
-        name: string,
-        instrument: string,
-        play(action: string): string
-     }
-
-     class Guitarist implements Musician {
-        // name: string
-        // instrument: string
-
-        constructor(public name: string, public instrument: string) {
-             this.name = name
-             this.instrument = instrument
-        }
-
-        play(action: string) {
-            return `${this.name} ${action} the ${this.instrument}`
-        }
-     }
-
-     const Page = new Guitarist('Jimmy', 'guitar')
-     console.log(Page.play('strums'))
-////////////////////////////////////////////////////
-class Peeps {
-    static count: number = 0
-
-    static getCount(): number {
-        return Peeps.count
-    }
-
-    public id: number 
-
-    constructor(public name: string){
-        this.name = name
-        this.id = ++Peeps.count
-    }
+interface TransactionObj {
+    readonly [index:string]: number
+    Pizza: number,
+    Books: number,
+    Job: number
 }
 
 
-const John = new Peeps('John')
-const Steve = new Peeps('Steve')
-const Amy = new Peeps('Amy')
+const todaysTransactions: TransactionObj  = {
+    Pizza: -10,
+    Books: -5,
+    Job: 50
+}
 
-console.log(Peeps.count)
+console.log(todaysTransactions.Pizza)
+console.log(todaysTransactions['Pizza'])
+
+let prop: string = 'Pizza'
+
+console.log(todaysTransactions[prop])
+/*
+! Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'TransactionObj'.
+!  No index signature with a parameter of type 'string' was found on type 'TransactionObj'.
+*/
+
+const todaysNet = (transactions: TransactionObj): number => {
+    let total = 0
+    for (const transaction in transactions) {
+        total += transactions[transaction]
+    }
+    return total
+}
+console.log(todaysNet(todaysTransactions))
+
+// no typescript error even though it should return undefined
+console.log(todaysTransactions['Dave'])
 
 //////////////////////////////////
-
-class Bands {
-    private dataState: string[]
-
-    constructor(){
-        this.dataState = []
-    }
-
-    public get data(): string[] {
-        return this.dataState
-    }
-
-    public set data(value: string[]) {
-        if (Array.isArray(value) && value.every( el => typeof el === 'string')){
-            this.dataState = value
-            return
-        } else {
-            throw new Error('Param is not an array of strings')
-        }
-    }
+interface Student {
+    // [key: string]: string | number | number[] | undefined // <<--- add index signature here; because classes is optional
+    // we had to define all the return types, including undefined
+    name: string,
+    GPA: number,
+    classes?: number[]
 }
 
-const MyBands = new Bands()
-MyBands.data = ['Neil Young', 'Led Zep']
-console.log(MyBands.data)
-MyBands.data = [...MyBands.data, 'ZZ Top']
+const student: Student = {
+    name: 'Doug',
+    GPA: 3.5,
+    classes: [100, 200]
+}
+
+
+
+for (const key in student) {
+    console.log(`${key}: ${student[key as keyof Student]}`) // <<-- `as keyof` essentially returns the keys of our interface (Student)
+}
+
+/**
+ * typeof student === object w/ interface Student
+ *  - just long way of saying the same thing as above
+ */
+Object.keys(student).map( key => {
+    console.log(student[key as keyof typeof student])
+})
+
+
+/**
+ * 
+ * @param student annotate with interface Student
+ * @param key annotate using `keyof` keyword; keyof Student
+ */
+const logStudentKey = (student: Student, key: keyof Student): void => {
+    console.log(`Student ${key}: ${student[key]}`)
+}
+logStudentKey(student, 'GPA')
+
+////////////////////////////////////////
+
+// interface Incomes {
+//     [key: string]: number
+// }
+
+type Streams = 'salary' | 'bonus' | 'sideHustle'
+/**
+ * this is a Record Utility type < x , y >
+ * where x is the types of keys ( in this case we defined `Streams` to have literal types )
+ * and y is the types of values
+ * 
+ * - so instead of using index signature, and setting our keys to type string, we can set them to a literal type that we create
+ * - we just have to use assertion when we dynamically access an object's property, as shown in example below
+ */
+type Incomes = Record<Streams, number>
+
+const monthlyIncomes: Incomes = {
+    salary: 500,
+    bonus: 100,
+    sideHustle: 250
+}
+
+for (const revenue in monthlyIncomes ) {
+    console.log(monthlyIncomes[revenue as keyof Incomes])
+}
